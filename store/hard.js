@@ -130,7 +130,7 @@ export const state = () => ({
     rare: {
       rate: {
         numerator: 100,
-        denominator: 1600
+        denominator: 1592
       },
       items: [
         {
@@ -345,10 +345,10 @@ export const state = () => ({
       math: "*"
     },
 
-    // BAD LUCK MITIGATION (+25 to numerator on fail, max 75)
+    // BAD LUCK MITIGATION (-1 to denominator on fail, max 100)
     blm: {
       value: 1,
-      math: "+",
+      math: "-",
       max: 100
     },
 

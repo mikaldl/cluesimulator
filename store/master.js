@@ -304,7 +304,7 @@ export const state = () => ({
     // BAD LUCK MITIGATION (+25 to numerator on fail, max 75)
     blm: {
       value: 25,
-      math: "+",
+      math: "-",
       max: 75
     },
 
