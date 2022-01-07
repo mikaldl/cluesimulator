@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "nl.stormarchive.livemap",
+      "sha256_cert_fingerprints": ["1A:86:96:8C:4F:23:8C:5D:43:F9:BA:41:40:09:45:5D:2C:C3:F6:BC:A2:8D:9F:AE:83:35:95:67:B1:CE:98:FD", "SHA256: E5:41:F3:19:53:24:45:EF:A2:EA:5E:15:FD:5C:FF:02:F6:40:D0:E4:7E:87:30:CD:A3:7E:3F:BF:BD:23:09:5E"]
+    }
+  }
+]
