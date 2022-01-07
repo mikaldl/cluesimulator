@@ -168,9 +168,8 @@
     static() {
       return {
         currentLuckMeter: [],
-        currentRareRateNumerator: 0,
+        currentBLM: 0,
         autoOpenMethod: null,
-
       }
     },
 
@@ -254,11 +253,7 @@
       open() {
         let amountOfRolls = Array.isArray(this.rollAmount) ? (Math.floor(Math.random() * (this.rollAmount[1] - this.rollAmount[0] + 1)) + this.rollAmount[0]) : this.rollAmount;
 
-        if (!this.currentRareRateNumerator) {
-          this.currentRareRateNumerator = this.rareNumerator
-        }
-
-        console.log('CURRENT', this.enhancers.blm, this.currentRareRateNumerator)
+        console.log('CURRENT BAD LUCK MITIGATION', this.enhancers.blm, this.currentBLM)
 
         let hadRareRoll = false,
           rolls = []
@@ -270,20 +265,9 @@
           console.log("")
           console.log("Rolling for slot:", i)
 
-          console.log("NUMERATOR", this.currentRareRateNumerator)
-
-          let roll = this.roll(this.currentRareRateNumerator, hadRareRoll, i === amountOfRolls)
+          let roll = this.roll(this.currentBLM, hadRareRoll, i === amountOfRolls)
 
           this.currentTotalHits++;
-
-          if(!roll.isRare) {
-            if (this.enhancers.blm) {
-              this.currentRareRateNumerator = this.calculateBadLuckMitigation(this.currentRareRateNumerator)
-            }
-          } else {
-            // Reset numerator to default
-            this.currentRareRateNumerator = this.rareNumerator
-          }
 
           if (roll.isRare) {
             console.log("IS RARE")
@@ -301,6 +285,21 @@
           }
 
           rolls.push(roll)
+        }
+
+        // If we didn't have any rare rolls, moditfy the denominator.
+        if(!hadRareRoll) {
+          if (this.enhancers.blm) {
+            this.currentBLM = this.calculateBadLuckMitigation(this.currentBLM)
+
+            console.log("Increased Bad Luck Mitigation:", this.currentBLM)
+          }
+        } else {
+          // Reset numerator to default
+          this.currentBLM = 0
+            if(this.enhancers.blm) {
+              console.log("Resetted Bad Luck Mitigation to 0")
+            }
         }
 
         if (this.enhancers.osh) {
@@ -322,12 +321,18 @@
         this.opened++
       },
 
-      roll(numerator, hadRareRoll, isLastRoll) {
+      roll(blm, hadRareRoll, isLastRoll) {
         // Calculate the new denominator according to user input.
         let rareDenominator = this.rareDenominator
+        let numerator = this.rareNumerator
 
         if (this.enhancers.ring) {
-          rareDenominator = this.doDirtyMaths(rareDenominator + " " + this.ringMath + " " + this.ringIncreaser)
+          rareDenominator = Math.round(this.doDirtyMaths(rareDenominator + " " + this.ringMath + " " + this.ringIncreaser))
+        }
+
+        // Whenever we have some BLM modifier, substract it from the denominator.
+        if (blm !== 0) {
+            rareDenominator += blm
         }
 
         console.log("Your rare loot table chance was: " + numerator + "/" + rareDenominator)
@@ -467,7 +472,8 @@
       },
 
       calculateBadLuckMitigation(current) {
-        if (this.rareNumerator + this.blmMax > current) {
+        // Convert the current whenever it's below zero to check the max BLM factor.
+        if (this.blmMax > (current < 0 ? (current * -1) : current)) {
           return this.doDirtyMaths(current + " " + this.blmMath + " " + this.blmIncreaser)
         }
 
