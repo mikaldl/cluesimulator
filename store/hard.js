@@ -130,7 +130,7 @@ export const state = () => ({
     rare: {
       rate: {
         numerator: 100,
-        denominator: 1600
+        denominator: 1592
       },
       items: [
         {
